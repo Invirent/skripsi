@@ -6,6 +6,7 @@ import time
 from translation import translate
 
 sr.__version__ = '3.10.0'
+tts.__version__ = '2.90'
 
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
