@@ -1,43 +1,41 @@
 from multiprocessing import Process
 import speech_recognition as sr
-import pyttsx3 as tts
 import time
 
+from text2speech import speak
 from translation import translate
 
 sr.__version__ = '3.10.0'
-tts.__version__ = '2.90'
 
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
-def speaktext(voice):
-    engine = tts.init()
-    engine.say(voice)
-    engine.runAndWait()
-
 def process_sound():
     with microphone as source:
         recognizer.adjust_for_ambient_noise(source,duration=1)
-        audio2 = recognizer.listen(source, timeout=3, phrase_time_limit=8)
         try:
+            audio2 = recognizer.listen(source, phrase_time_limit=5)
             original_text = recognizer.recognize_google(audio2, language="id")
             original_text = original_text.lower()
-            
+            print(original_text)
             translated_text = translate(original_text, lang="en")
-            speaktext(translated_text)
+            if original_text == translated_text:
+                return False
+            if translated_text:
+                speak(translated_text)
         except Exception as e:
+            print(e)
             return False
         
 if __name__ == '__main__':
-    number_of_processors = 3
+    number_of_processors = 10
 
     key_logger = input("Run Speech Recognition by pressing enter")
     if key_logger != None:
         while True:
-            time_interval = 7.999999
+            time_interval = 4.99997
             processed = []
-            for i in range(3):
+            for i in range(number_of_processors + 1):
                 recognizer_function = Process(
                     target=process_sound, args=())
                 processed.append(recognizer_function)
@@ -47,3 +45,13 @@ if __name__ == '__main__':
             for process in processed:
                 process.join()
             
+def process_sound():
+    with microphone as source:
+        recognizer.adjust_for_ambient_noise(source,duration=1)
+        try:
+            audio2 = recognizer.listen(source, phrase_time_limit=5)
+            original_text = recognizer.recognize_google(audio2, language="id")
+            original_text = original_text.lower()
+            return original_text
+        except Exception as e:
+            return False
