@@ -17,14 +17,12 @@ def process_sound():
             audio2 = recognizer.listen(source, phrase_time_limit=5)
             original_text = recognizer.recognize_google(audio2, language="id")
             original_text = original_text.lower()
-            print(original_text)
             translated_text = translate(original_text, lang="en")
             if original_text == translated_text:
                 return False
             if translated_text:
                 speak(translated_text)
         except Exception as e:
-            print(e)
             return False
         
 if __name__ == '__main__':
@@ -45,13 +43,3 @@ if __name__ == '__main__':
             for process in processed:
                 process.join()
             
-def process_sound():
-    with microphone as source:
-        recognizer.adjust_for_ambient_noise(source,duration=1)
-        try:
-            audio2 = recognizer.listen(source, phrase_time_limit=5)
-            original_text = recognizer.recognize_google(audio2, language="id")
-            original_text = original_text.lower()
-            return original_text
-        except Exception as e:
-            return False
